@@ -2,6 +2,8 @@
 
 ChatPDF enables you to upload PDF files and ask questions about the content of those files using LLM, an open-source language model. The app processes PDF files, breaks the text into manageable chunks for question-answering based on the contents of the PDF.
 
+[ChatPDF Live Demo](https://chatwithmultiplepdffiles.streamlit.app/)
+
 ## Features:
 
 - Upload multiple PDF files.
@@ -22,7 +24,7 @@ Ensure you have the following installed:
 
 First, clone this repository to your local machine:
 ```bash
-git clone https://github.com/your-username/ChatPDF.git
+git clone https://github.com/AnkushRathour/ChatPDF.git
 cd ChatPDF
 ```
 
