@@ -11,6 +11,11 @@ load_dotenv()
 # Initialize Cohere API
 cohere_api_key = os.getenv("COHERE_API_KEY")
 cohere_client = cohere.Client(cohere_api_key)
+CHAT_MODELS = [
+  "command-a-03-2025",
+  "command-r-plus-08-2024",
+  "command-r-08-2024",
+]
 
 # Extract text from uploaded PDF files
 def extract_pdf_text(pdf_files):
@@ -32,33 +37,32 @@ def split_text_into_chunks(text):
 def handle_user_query(user_question, context_chunks):
   context = " ".join(context_chunks)
   prompt = f"""
-    You are helpful AI Assistant designed to help analyse a PDF.
-    Use the provided context to assist in extracting relevant information
-    and performing analysis tasks. If the information is not present in the
-    context, simply state that the data is unavailable.
-    Follow these rules at all times:
-    - Do not access or refer to personal information outside the scope of the
-      provided context.
-    - Limit your assistance to the content of the context and queries
-      related directly to them.
-    - Stick strictly to factual and verifiable information provided in the
-      context. Avoid assumptions or interpretations beyond the data presented.
+You are a helpful AI assistant designed to analyze PDF content.
+Use only the provided context to answer the user's question.
+If the answer is not in the context, clearly say the data is unavailable.
 
-    Context:
-    {context}
+Context:
+{context}
 
-    Question:
-    {user_question}
+Question:
+{user_question}
+"""
+  last_error = None
+  for model_name in CHAT_MODELS:
+    try:
+      response = cohere_client.chat(
+        model=model_name,
+        message=prompt,
+        max_tokens=300
+      )
+      st.write("Reply:", response.text)
+      return
+    except Exception as err:
+      last_error = err
 
-    Answer:
-  """
-  response = cohere_client.generate(
-    model='command-xlarge-nightly',
-    prompt=prompt,
-    max_tokens=200
-  )
-
-  st.write("Reply:", response.generations[0].text)
+  st.error("No supported Cohere chat model is available for this API key.")
+  if last_error:
+    st.exception(last_error)
 
 def main():
   st.set_page_config(page_title="ChatPDF 💬📄", page_icon="💬")
